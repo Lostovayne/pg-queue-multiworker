@@ -8,10 +8,10 @@
     "worker:dev": "bun --watch src/worker.ts",
     "start": "bun src/app.ts",
     "worker": "bun src/worker.ts",
-    "test:stress:const": "bun test-queue.ts stress",
-    "test:stress:5000": "bun test-queue.ts 1000 3",
-    "cloud:stress": "bun cloud-stress-test.ts",
-    "queue:watch": "bun queue-stats-watch.ts"
+    "test:stress:const": "bun scripts/test-queue.ts stress",
+    "test:stress:5000": "bun scripts/test-queue.ts 1000 3",
+    "cloud:stress": "bun scripts/cloud-stress-test.ts",
+    "queue:watch": "bun scripts/queue-stats-watch.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
