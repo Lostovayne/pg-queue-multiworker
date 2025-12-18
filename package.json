@@ -1,0 +1,31 @@
+{
+  "name": "queue-postgresql",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/app.ts",
+    "worker:dev": "bun --watch src/worker.ts",
+    "start": "bun src/app.ts",
+    "worker": "bun src/worker.ts",
+    "test:stress:const": "bun test-queue.ts stress",
+    "test:stress:5000": "bun test-queue.ts 1000 3",
+    "cloud:stress": "bun cloud-stress-test.ts",
+    "queue:watch": "bun queue-stats-watch.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "graphile-worker": "^0.16.6",
+    "pg": "^8.16.3",
+    "zod": "^4.2.1"
+  }
+}

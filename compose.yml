@@ -1,0 +1,63 @@
+name: bun-worker-project
+
+services:
+  # 1. Base de Datos (Postgres Local)
+  db:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    # Healthcheck para orquestación perfecta
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # Persistencia de datos (para no perder trabajos si reinicias)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - queue-network
+
+  # 2. API (Express + Bun)
+  api:
+    build: .
+    command: bun src/app.ts
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://myuser:mypassword@db:5432/mydatabase
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - queue-network
+
+  # 3. Workers (Graphile + Bun) - 2 instancias
+  worker:
+    build: .
+    command: bun src/worker.ts
+    environment:
+      DATABASE_URL: postgres://myuser:mypassword@db:5432/mydatabase
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 2 # 2 workers = 10 jobs concurrentes (5×2)
+    networks:
+      - queue-network
+
+# Definición de volúmenes
+volumes:
+  pgdata:
+
+# Red personalizada para mejor aislamiento
+networks:
+  queue-network:
+    driver: bridge
